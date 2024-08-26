@@ -1,8 +1,6 @@
 package com.tsystem.mediameter.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,14 +16,21 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name="media")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 public class MediaModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
     private String name;
+
     private String description;
-    private LocalDate release_date;
+
+    private LocalDate releaseDate;
+
     private String photo;
 
     @ManyToOne
@@ -50,11 +55,11 @@ public class MediaModel {
 
     @ManyToOne
     @JoinColumn(name="media_type_id", nullable=false)
-    private MediaTypeModel media_type;
+    private MediaTypeModel mediaType;
 
     @ManyToOne
     @JoinColumn(name="user_media_id", nullable=false)
-    private UserMediaModel user_media;
+    private UserMediaModel userMedia;
 
     @JsonIgnore
     @OneToMany(mappedBy = "media")

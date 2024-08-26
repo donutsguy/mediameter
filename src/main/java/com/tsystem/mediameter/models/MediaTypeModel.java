@@ -1,7 +1,6 @@
 package com.tsystem.mediameter.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,6 +23,6 @@ public class MediaTypeModel {
     private String name;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "media_type", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "mediaType", fetch = FetchType.LAZY)
     private List<MediaModel> medias;
 }

@@ -20,7 +20,7 @@ public class RatingUserModel {
 
     @ManyToOne
     @JoinColumn(name = "user_media_id")
-    private UserMediaModel user_media;
+    private UserMediaModel userMedia;
 
     @ManyToOne
     @JoinColumn(name = "rating_id")

@@ -1,7 +1,6 @@
 package com.tsystem.mediameter.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,10 +24,10 @@ public class UserMediaModel {
     private String email;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "user_media")
+    @OneToMany(mappedBy = "userMedia")
     private List<RatingUserModel> ratings;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "user_media", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "userMedia", fetch = FetchType.LAZY)
     private List<MediaModel> medias;
 }
