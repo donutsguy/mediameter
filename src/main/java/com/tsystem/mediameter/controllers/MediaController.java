@@ -3,34 +3,36 @@ package com.tsystem.mediameter.controllers;
 import com.tsystem.mediameter.dtos.MediaDto;
 import com.tsystem.mediameter.models.MediaModel;
 import com.tsystem.mediameter.repositories.MediaRepository;
-import com.tsystem.mediameter.services.MediaService;
 import com.tsystem.mediameter.services.MediaServiceSpecification;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/medias")
 public class MediaController {
+    private static final Set<String> ALLOWED_SORT_FIELDS = Set.of("name", "platform", "idiom", "country", "genre", "team", "media_type");
 
     @Autowired
     private MediaRepository mediaRepository;
 
     @Autowired
-    private MediaService mediaService;
-
-    @Autowired
     private MediaServiceSpecification mediaServiceSpecification;
 
+
     @GetMapping
-    public ResponseEntity<List<MediaModel>> getMedia(
+    public ResponseEntity<Page<MediaModel>> getMedia(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "description", required = false) String description,
             @RequestParam(value = "platform", required = false) String platform,
@@ -42,24 +44,63 @@ public class MediaController {
             @RequestParam(value = "user", required = false) String userMedia,
             @RequestParam(value = "startdate", required = false) LocalDate startDate,
             @RequestParam(value = "enddate", required = false) LocalDate endDate,
-            @RequestParam (value = "page", required = false) Integer page,
-            @RequestParam(value = "size", required = false) Integer size
+            @RequestParam (value = "page", defaultValue = "0") Integer page,
+            @RequestParam (value = "size", defaultValue = "5") Integer size,
+            @RequestParam(required = false) String[] sort
     ){
-        //response de pagina
-//        if (page != null && size != null){
-//           return ResponseEntity.status(HttpStatus.FOUND).body(mediaService.getAll(page, size));
-//        }
 
-        return ResponseEntity.status(HttpStatus.FOUND).body(mediaServiceSpecification.getAllMedias(
-                name, description, platform, idiom, country, genre, team, mediaType, userMedia, startDate, endDate
-        ));
+        List<Sort.Order> orders = new ArrayList<>();
+
+        if (sort != null) {
+            for (int i = 0; i < sort.length/2; i++) {
+                String field = sort[i];
+                String direction = sort[i+1];
+                if (ALLOWED_SORT_FIELDS.contains(field)) {
+                    Sort.Direction sortDirection = direction.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+                    orders.add(new Sort.Order(sortDirection, field));
+                }
+            }
+        }
+
+        if (orders.isEmpty()) {
+            orders.add(Sort.Order.asc("name"));
+        }
+
+        Page<MediaModel> mediaPage = mediaServiceSpecification.getAllPageablesMedias(
+                name, description, platform, idiom, country, genre, team, mediaType, userMedia, startDate, endDate,
+                page, size, orders
+        );
+
+        return ResponseEntity.status(HttpStatus.FOUND).body(mediaPage);
     }
-
 
     @PostMapping
     public ResponseEntity<MediaModel> createMedia(@RequestBody @Valid MediaDto mediaDto){
         var mediaModel = new MediaModel();
         BeanUtils.copyProperties(mediaDto, mediaModel);
         return ResponseEntity.status(HttpStatus.CREATED).body(mediaRepository.save(mediaModel));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Object> updateMedia(@PathVariable(value = "id") Long id, @RequestBody @Valid MediaDto mediaDto){
+        Optional<MediaModel> mediaO = mediaRepository.findById(id);
+        if (mediaO.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Media not found");
+        }
+
+        var mediaModel = mediaO.get();
+        BeanUtils.copyProperties(mediaDto, mediaModel);
+        return ResponseEntity.status(HttpStatus.OK).body(mediaRepository.save(mediaModel));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteMedia(@PathVariable(value = "id") Long id) {
+        Optional<MediaModel> mediaO = mediaRepository.findById(id);
+        if (mediaO.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Media not found");
+        }
+
+        mediaRepository.deleteById(id);
+        return ResponseEntity.status(HttpStatus.OK).body("Successfully media excluded");
     }
 }

@@ -4,6 +4,9 @@ import com.tsystem.mediameter.models.MediaModel;
 import com.tsystem.mediameter.repositories.MediaRepository;
 import com.tsystem.mediameter.specifications.MediaSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -16,9 +19,10 @@ public class MediaServiceSpecification {
     @Autowired
     private MediaRepository mediaRepository;
 
-    public List<MediaModel> getAllMedias(String name, String description, String platform,
-                                         String idiom, String country, String genre, String team,
-                                         String type, String userMedia, LocalDate startDate, LocalDate endDate){
+    public Page<MediaModel> getAllPageablesMedias(String name, String description, String platform,
+                                                  String idiom, String country, String genre, String team,
+                                                  String type, String userMedia, LocalDate startDate, LocalDate endDate,
+                                                  Integer page, Integer size, List<Sort.Order> orders){
 
         Specification<MediaModel> spec = Specification
                 .where(MediaSpecification.containsName(name))
@@ -32,6 +36,8 @@ public class MediaServiceSpecification {
                 .and(MediaSpecification.hasUserMedia(userMedia))
                 .and(MediaSpecification.hasReleaseDateRange(startDate, endDate));
 
-        return mediaRepository.findAll(spec);
+        PageRequest pageable = PageRequest.of(page, size, Sort.by(orders));
+
+        return mediaRepository.findAll(spec, pageable);
     }
 }

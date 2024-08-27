@@ -1,9 +1,9 @@
 package com.tsystem.mediameter.repositories;
 
 import com.tsystem.mediameter.models.MediaModel;
-import lombok.NonNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -21,4 +21,5 @@ public interface MediaRepository extends JpaRepository<MediaModel, Long>, JpaSpe
     List<MediaModel> findByTeamName(String teamName);
     List<MediaModel> findByMediaTypeName(String mediaTypeName);
     List<MediaModel> findByUserMediaName(String userMediaName);
+    Page<MediaModel> findAll(Specification<MediaModel> spec, Pageable pageable);
 }
