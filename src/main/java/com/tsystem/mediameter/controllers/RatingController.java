@@ -31,6 +31,6 @@ public class RatingController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Watched not found");
         }
 
-        return ResponseEntity.status(HttpStatus.FOUND).body(ratingUserRepository.findAllByUser(watchedO.get()));
+        return ResponseEntity.status(HttpStatus.FOUND).body(ratingUserRepository.findAllByUserMedia(watchedO.get()));
     }
 }

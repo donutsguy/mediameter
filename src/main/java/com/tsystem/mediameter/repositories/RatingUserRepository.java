@@ -8,5 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface RatingUserRepository extends JpaRepository<RatingUserModel, Long> {
-    List<WatchedModel> findAllByUser(UserMediaModel user);
+    List<WatchedModel> findAllByUserMedia(UserMediaModel user);
 }
