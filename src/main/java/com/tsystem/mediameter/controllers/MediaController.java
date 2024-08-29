@@ -30,6 +30,15 @@ public class MediaController {
     @Autowired
     private MediaServiceSpecification mediaServiceSpecification;
 
+    @GetMapping("/{id}")
+    public ResponseEntity<MediaModel> getMediaById(@PathVariable Long id) {
+        Optional<MediaModel> media = mediaRepository.findById(id);
+        if (media.isPresent()) {
+            return ResponseEntity.ok(media.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
 
     @GetMapping
     public ResponseEntity<Page<MediaModel>> getMedia(
@@ -71,7 +80,7 @@ public class MediaController {
                 page, size, orders
         );
 
-        return ResponseEntity.status(HttpStatus.FOUND).body(mediaPage);
+        return ResponseEntity.ok(mediaPage);
     }
 
     @PostMapping
