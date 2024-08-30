@@ -1,9 +1,7 @@
 package com.tsystem.mediameter.controllers;
 
 import com.tsystem.mediameter.models.GenreModel;
-import com.tsystem.mediameter.models.IdiomModel;
 import com.tsystem.mediameter.repositories.GenreRepository;
-import com.tsystem.mediameter.repositories.IdiomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +20,6 @@ public class GenreController {
 
     @GetMapping
     public ResponseEntity<List<GenreModel>> getGenre(){
-        return ResponseEntity.status(HttpStatus.FOUND).body(genreRepository.findAll());
+        return ResponseEntity.status(HttpStatus.OK).body(genreRepository.findAll());
     }
 }
