@@ -22,6 +22,6 @@ public class FriendController {
 
     @GetMapping
     public ResponseEntity<List<FriendModel>> getFriend(){
-        return ResponseEntity.status(HttpStatus.FOUND).body(friendRepository.findAll());
+        return ResponseEntity.status(HttpStatus.OK).body(friendRepository.findAll());
     }
 }
