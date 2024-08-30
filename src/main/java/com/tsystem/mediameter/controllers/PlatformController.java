@@ -1,15 +1,10 @@
 package com.tsystem.mediameter.controllers;
 
-import com.tsystem.mediameter.models.MediaTypeModel;
 import com.tsystem.mediameter.models.PlatformModel;
-import com.tsystem.mediameter.repositories.MediaTypeRepository;
-import com.tsystem.mediameter.repositories.PlatformRepository;
+import com.tsystem.mediameter.services.LookupService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -18,10 +13,24 @@ import java.util.List;
 public class PlatformController {
 
     @Autowired
-    PlatformRepository platformRepository;
+    private LookupService lookupService;
 
     @GetMapping
-    public ResponseEntity<List<PlatformModel>> getPlatform(){
-        return ResponseEntity.status(HttpStatus.FOUND).body(platformRepository.findAll());
+    public ResponseEntity<List<PlatformModel>> getAllPlatforms() {
+        List<PlatformModel> platforms = lookupService.getAllPlatforms();
+        return ResponseEntity.ok(platforms);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<PlatformModel> getPlatformById(@PathVariable String id) {
+        Long platformId;
+        try {
+            platformId = Long.parseLong(id);
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+
+        PlatformModel platform = lookupService.getPlatformById(platformId);
+        return ResponseEntity.ok(platform);
     }
 }
