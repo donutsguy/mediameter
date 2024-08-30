@@ -1,0 +1,90 @@
+package com.tsystem.mediameter.services;
+
+import com.tsystem.mediameter.exeptions.ResourceNotFoundException;
+import com.tsystem.mediameter.models.*;
+import com.tsystem.mediameter.repositories.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class LookupService {
+
+    @Autowired
+    private PlatformRepository platformRepository;
+
+    @Autowired
+    private IdiomRepository idiomRepository;
+
+    @Autowired
+    private CountryRepository countryRepository;
+
+    @Autowired
+    private GenreRepository genreRepository;
+
+    @Autowired
+    private TeamRepository teamRepository;
+
+    @Autowired
+    private MediaTypeRepository mediaTypeRepository;
+
+    @Autowired
+    private UserMediaRepository userMediaRepository;
+
+    public PlatformModel getPlatformById(Long id) {
+        return platformRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Platform not found"));
+    }
+
+    public IdiomModel getIdiomById(Long id) {
+        return idiomRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Idiom not found"));
+    }
+
+    public CountryModel getCountryById(Long id) {
+        return countryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Country not found"));
+    }
+
+    public GenreModel getGenreById(Long id) {
+        return genreRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Genre not found"));
+    }
+
+    public TeamModel getTeamById(Long id) {
+        return teamRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Team not found"));
+    }
+
+    public MediaTypeModel getMediaTypeById(Long id) {
+        return mediaTypeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("MediaType not found"));
+    }
+
+    public UserMediaModel getUserMediaById(Long id) {
+        return userMediaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("UserMedia not found"));
+    }
+
+    public List<MediaTypeModel> getAllMediaTypes() {
+        return mediaTypeRepository.findAll();
+    }
+
+    public List<IdiomModel> getAllIdioms() {
+        return idiomRepository.findAll();
+    }
+
+    public List<PlatformModel> getAllPlatforms() {
+        return platformRepository.findAll();
+    }
+
+    public List<GenreModel> getAllGenres() {
+        return genreRepository.findAll();
+    }
+
+    public List<TeamModel> getAllTeams() {
+        return teamRepository.findAll();
+    }
+
+}
