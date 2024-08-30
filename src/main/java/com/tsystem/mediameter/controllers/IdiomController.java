@@ -20,6 +20,6 @@ public class IdiomController {
 
     @GetMapping
     public ResponseEntity<List<IdiomModel>> getIdiom(){
-        return ResponseEntity.status(HttpStatus.FOUND).body(idiomRepository.findAll());
+        return ResponseEntity.status(HttpStatus.OK).body(idiomRepository.findAll());
     }
 }
