@@ -1,5 +1,6 @@
 package com.tsystem.mediameter.controllers;
 
+import com.tsystem.mediameter.exeptions.ResourceNotFoundException;
 import com.tsystem.mediameter.models.CountryModel;
 import com.tsystem.mediameter.models.GenreModel;
 import com.tsystem.mediameter.repositories.CountryRepository;
@@ -20,8 +21,8 @@ public class CountryController {
     @Autowired
     CountryRepository countryRepository;
 
-    @GetMapping
-    public ResponseEntity<List<CountryModel>> getCountry(){
-        return ResponseEntity.status(HttpStatus.FOUND).body(countryRepository.findAll());
+    private CountryModel getCountryById(String id) {
+        return countryRepository.findById(Long.parseLong(id))
+                .orElseThrow(() -> new ResourceNotFoundException("Country not found"));
     }
 }
