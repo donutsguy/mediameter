@@ -1,8 +1,8 @@
 package com.tsystem.mediameter.controllers;
 
-import com.tsystem.mediameter.dtos.MediaDto;
-import com.tsystem.mediameter.models.MediaModel;
+import com.tsystem.mediameter.models.*;
 import com.tsystem.mediameter.repositories.MediaRepository;
+import com.tsystem.mediameter.services.LookupService;
 import com.tsystem.mediameter.services.MediaServiceSpecification;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
@@ -12,6 +12,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import com.tsystem.mediameter.dtos.MediaDto;
+
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -29,6 +32,9 @@ public class MediaController {
 
     @Autowired
     private MediaServiceSpecification mediaServiceSpecification;
+
+    @Autowired
+    private LookupService lookupService;
 
     @GetMapping("/{id}")
     public ResponseEntity<MediaModel> getMediaById(@PathVariable Long id) {
@@ -56,14 +62,13 @@ public class MediaController {
             @RequestParam (value = "page", defaultValue = "0") Integer page,
             @RequestParam (value = "size", defaultValue = "5") Integer size,
             @RequestParam(required = false) String[] sort
-    ){
-
+    ) {
         List<Sort.Order> orders = new ArrayList<>();
 
         if (sort != null) {
-            for (int i = 0; i < sort.length/2; i++) {
+            for (int i = 0; i < sort.length / 2; i++) {
                 String field = sort[i];
-                String direction = sort[i+1];
+                String direction = sort[i + 1];
                 if (ALLOWED_SORT_FIELDS.contains(field)) {
                     Sort.Direction sortDirection = direction.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
                     orders.add(new Sort.Order(sortDirection, field));
@@ -84,16 +89,39 @@ public class MediaController {
     }
 
     @PostMapping
-    public ResponseEntity<MediaModel> createMedia(@RequestBody @Valid MediaDto mediaDto){
-        var mediaModel = new MediaModel();
-        BeanUtils.copyProperties(mediaDto, mediaModel);
-        return ResponseEntity.status(HttpStatus.CREATED).body(mediaRepository.save(mediaModel));
+    public ResponseEntity<MediaModel> createMedia(
+            @RequestParam("mediaTypeId") Long mediaTypeId,
+            @RequestParam("idiomId") Long idiomId,
+            @RequestParam("name") String name,
+            @RequestParam("genreId") Long genreId,
+            @RequestParam("releaseDate") String releaseDate,
+            @RequestParam("platformId") Long platformId,
+            @RequestParam("photo") MultipartFile photo,
+            @RequestParam("description") String description,
+            @RequestParam("userMediaId") Long userMediaId,
+            @RequestParam("countryId") Long countryId,
+            @RequestParam("teamId") Long teamId) {
+
+        MediaModel mediaModel = new MediaModel();
+        mediaModel.setPlatform(lookupService.getPlatformById(platformId));
+        mediaModel.setIdiom(lookupService.getIdiomById(idiomId));
+        mediaModel.setCountry(lookupService.getCountryById(countryId));
+        mediaModel.setGenre(lookupService.getGenreById(genreId));
+        mediaModel.setTeam(lookupService.getTeamById(teamId));
+        mediaModel.setMediaType(lookupService.getMediaTypeById(mediaTypeId));
+        mediaModel.setUserMedia(lookupService.getUserMediaById(userMediaId));
+        mediaModel.setName(name);
+        mediaModel.setDescription(description);
+        mediaModel.setReleaseDate(LocalDate.parse(releaseDate));
+
+        MediaModel savedMedia = mediaRepository.save(mediaModel);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedMedia);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateMedia(@PathVariable(value = "id") Long id, @RequestBody @Valid MediaDto mediaDto){
+    public ResponseEntity<Object> updateMedia(@PathVariable(value = "id") Long id, @RequestBody @Valid MediaDto mediaDto) {
         Optional<MediaModel> mediaO = mediaRepository.findById(id);
-        if (mediaO.isEmpty()){
+        if (mediaO.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Media not found");
         }
 
