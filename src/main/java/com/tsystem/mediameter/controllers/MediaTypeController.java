@@ -1,8 +1,6 @@
 package com.tsystem.mediameter.controllers;
 
-import com.tsystem.mediameter.models.CountryModel;
 import com.tsystem.mediameter.models.MediaTypeModel;
-import com.tsystem.mediameter.repositories.CountryRepository;
 import com.tsystem.mediameter.repositories.MediaTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,6 +20,6 @@ public class MediaTypeController {
 
     @GetMapping
     public ResponseEntity<List<MediaTypeModel>> getMediaType(){
-        return ResponseEntity.status(HttpStatus.FOUND).body(mediaTypeRepository.findAll());
+        return ResponseEntity.status(HttpStatus.OK).body(mediaTypeRepository.findAll());
     }
 }
